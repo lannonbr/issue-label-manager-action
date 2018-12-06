@@ -19,7 +19,7 @@ async function run() {
   console.log({ newLabels, labels });
 
   let idxs = await Promise.all(
-    newLabels.forEach(async label => {
+    newLabels.map(async label => {
       return new Promise(async resolve => {
         let { name, color, description } = label;
 
