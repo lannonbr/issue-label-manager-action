@@ -1,10 +1,12 @@
 const { Toolkit } = require("actions-toolkit");
 const fs = require("fs");
 const path = require("path");
+
 const tools = new Toolkit();
 const octokit = tools.createOctokit();
 
 async function run() {
+  // Get current labels on GitHub
   let response = await octokit.issues.listLabelsForRepo(tools.context.repo());
   let labels = response.data;
 
@@ -14,11 +16,10 @@ async function run() {
     "labels.json"
   );
 
+  // Get the labels to be pushed from the labels.json file
   let newLabels = JSON.parse(fs.readFileSync(url).toString());
 
-  console.log({ newLabels, labels });
-
-  let idxs = await Promise.all(
+  let indexesOfLabelsToBeRemovedFromArray = await Promise.all(
     newLabels.map(async label => {
       return new Promise(async resolve => {
         let { name, color, description } = label;
@@ -29,8 +30,6 @@ async function run() {
           idx = labels.findIndex(issue => issue.name === name);
         }
 
-        console.log({ idx });
-
         if (idx !== -1) {
           let params = tools.context.repo({
             current_name: name,
@@ -38,7 +37,6 @@ async function run() {
             description,
             headers: { accept: "application/vnd.github.symmetra-preview+json" }
           });
-          console.log("UPDATE");
           await octokit.issues.updateLabel(params);
           resolve(idx);
         } else {
@@ -48,7 +46,6 @@ async function run() {
             description,
             headers: { accept: "application/vnd.github.symmetra-preview+json" }
           });
-          console.log("CREATE");
           await octokit.issues.createLabel(params);
           resolve(-1);
         }
@@ -56,8 +53,9 @@ async function run() {
     })
   );
 
+  // Filter labels array to include labels not defined in json file
   labels = labels.filter((_, idx) => {
-    return !idxs.includes(idx);
+    return !indexesOfLabelsToBeRemovedFromArray.includes(idx);
   });
 
   // Delete labels that exist on GitHub that aren't in labels.json
