@@ -16,17 +16,19 @@ async function run() {
 
   let newLabels = fs.readFileSync(url).toJSON().data;
 
-  newLabels.forEach(async label => {
-    let { name, color, description } = label;
+  console.log({ newLabels });
 
-    let params = tools.context.repo({ name, color, description });
+  // newLabels.forEach(async label => {
+  //   let { name, color, description } = label;
 
-    if (labels.some(issue => issue.name === name)) {
-      await octokit.issues.updateLabel(params);
-    } else {
-      await octokit.issues.createLabel(params);
-    }
-  });
+  //   let params = tools.context.repo({ name, color, description });
+
+  //   if (labels.some(issue => issue.name === name)) {
+  //     await octokit.issues.updateLabel(params);
+  //   } else {
+  //     await octokit.issues.createLabel(params);
+  //   }
+  // });
 }
 
 run();
