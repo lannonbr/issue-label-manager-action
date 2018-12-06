@@ -29,6 +29,7 @@ async function run() {
         headers: { accept: "application/vnd.github.symmetra-preview+json" }
       });
       await octokit.issues.updateLabel(params);
+      labels = labels.splice(idx, 1);
     } else {
       let params = tools.context.repo({
         name,
@@ -38,8 +39,6 @@ async function run() {
       });
       await octokit.issues.createLabel(params);
     }
-
-    labels = labels.splice(idx, 1);
   });
 
   // Delete labels that exist on GitHub that aren't in labels.json
