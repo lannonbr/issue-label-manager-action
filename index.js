@@ -16,12 +16,12 @@ async function run() {
 
   let newLabels = JSON.parse(fs.readFileSync(url).toString());
 
-  console.log({ newLabels });
-
   newLabels.forEach(async label => {
     let { name, color, description } = label;
 
-    if (labels.some(issue => issue.name === name)) {
+    let idx = labels.indexOf(issue => issue.name === name);
+
+    if (idx !== -1) {
       let params = tools.context.repo({
         current_name: name,
         color,
@@ -38,6 +38,17 @@ async function run() {
       });
       await octokit.issues.createLabel(params);
     }
+
+    labels = labels.splice(idx, 1);
+  });
+
+  // Delete labels that exist on GitHub that aren't in labels.json
+  labels.forEach(async label => {
+    let { name } = label;
+
+    let params = tools.context.repo({ name });
+
+    await octokit.issues.deleteLabel(params);
   });
 }
 
