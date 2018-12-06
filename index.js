@@ -14,7 +14,7 @@ async function run() {
     "labels.json"
   );
 
-  let newLabels = fs.readFileSync(url).toJSON();
+  let newLabels = fs.readFileSync(url).toJSON().data;
 
   newLabels.forEach(async label => {
     let { name, color, description } = label;
