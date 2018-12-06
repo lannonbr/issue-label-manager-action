@@ -24,7 +24,7 @@ async function run() {
     let idx = -1;
 
     if (labels.length > 0) {
-      idx = labels.indexOf(issue => issue.name === name);
+      idx = labels.findIndex(issue => issue.name === name);
     }
 
     console.log({ idx });
