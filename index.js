@@ -38,7 +38,7 @@ async function run() {
       });
       console.log("UPDATE");
       await octokit.issues.updateLabel(params);
-      labels = labels.splice(idx, 1);
+      labels.splice(idx, 1);
       console.log("AFTER SPLICE", labels);
     } else {
       let params = tools.context.repo({
