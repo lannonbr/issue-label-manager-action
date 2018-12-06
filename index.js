@@ -14,21 +14,21 @@ async function run() {
     "labels.json"
   );
 
-  let newLabels = fs.readFileSync(url).toJSON().data;
+  let newLabels = JSON.parse(fs.readFileSync(url).toString());
 
   console.log({ newLabels });
 
-  // newLabels.forEach(async label => {
-  //   let { name, color, description } = label;
+  newLabels.forEach(async label => {
+    let { name, color, description } = label;
 
-  //   let params = tools.context.repo({ name, color, description });
+    let params = tools.context.repo({ name, color, description });
 
-  //   if (labels.some(issue => issue.name === name)) {
-  //     await octokit.issues.updateLabel(params);
-  //   } else {
-  //     await octokit.issues.createLabel(params);
-  //   }
-  // });
+    if (labels.some(issue => issue.name === name)) {
+      await octokit.issues.updateLabel(params);
+    } else {
+      await octokit.issues.createLabel(params);
+    }
+  });
 }
 
 run();
