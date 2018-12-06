@@ -18,41 +18,47 @@ async function run() {
 
   console.log({ newLabels, labels });
 
-  newLabels.forEach(async label => {
-    let { name, color, description } = label;
+  let idxs = await Promise.all(
+    newLabels.forEach(async label => {
+      return new Promise(resolve => {
+        let { name, color, description } = label;
 
-    let idx = -1;
+        let idx = -1;
 
-    if (labels.length > 0) {
-      idx = labels.findIndex(issue => issue.name === name);
-    }
+        if (labels.length > 0) {
+          idx = labels.findIndex(issue => issue.name === name);
+        }
 
-    console.log({ idx });
+        console.log({ idx });
 
-    if (idx !== -1) {
-      let params = tools.context.repo({
-        current_name: name,
-        color,
-        description,
-        headers: { accept: "application/vnd.github.symmetra-preview+json" }
+        if (idx !== -1) {
+          let params = tools.context.repo({
+            current_name: name,
+            color,
+            description,
+            headers: { accept: "application/vnd.github.symmetra-preview+json" }
+          });
+          console.log("UPDATE");
+          await octokit.issues.updateLabel(params);
+          resolve(idx);
+        } else {
+          let params = tools.context.repo({
+            name,
+            color,
+            description,
+            headers: { accept: "application/vnd.github.symmetra-preview+json" }
+          });
+          console.log("CREATE");
+          await octokit.issues.createLabel(params);
+          resolve(-1);
+        }
       });
-      console.log("UPDATE");
-      await octokit.issues.updateLabel(params);
-      labels.splice(idx, 1);
-      console.log("AFTER SPLICE", labels);
-    } else {
-      let params = tools.context.repo({
-        name,
-        color,
-        description,
-        headers: { accept: "application/vnd.github.symmetra-preview+json" }
-      });
-      console.log("CREATE");
-      await octokit.issues.createLabel(params);
-    }
+    })
+  );
+
+  labels = labels.filter((_, idx) => {
+    return !idxs.includes(idx);
   });
-
-  console.log(labels);
 
   // Delete labels that exist on GitHub that aren't in labels.json
   labels.forEach(async label => {
