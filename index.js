@@ -16,7 +16,7 @@ async function run() {
 
   let newLabels = fs.readFileSync(url).toJSON();
 
-  newLabels.forEach(label => {
+  newLabels.forEach(async label => {
     let { name, color, description } = label;
 
     let params = tools.context.repo({ name, color, description });
