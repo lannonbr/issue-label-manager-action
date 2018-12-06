@@ -20,7 +20,7 @@ async function run() {
 
   let idxs = await Promise.all(
     newLabels.forEach(async label => {
-      return new Promise(resolve => {
+      return new Promise(async resolve => {
         let { name, color, description } = label;
 
         let idx = -1;
