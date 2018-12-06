@@ -27,6 +27,8 @@ async function run() {
       idx = labels.indexOf(issue => issue.name === name);
     }
 
+    console.log({ idx });
+
     if (idx !== -1) {
       let params = tools.context.repo({
         current_name: name,
@@ -34,8 +36,10 @@ async function run() {
         description,
         headers: { accept: "application/vnd.github.symmetra-preview+json" }
       });
+      console.log("UPDATE");
       await octokit.issues.updateLabel(params);
       labels = labels.splice(idx, 1);
+      console.log("AFTER SPLICE", labels);
     } else {
       let params = tools.context.repo({
         name,
@@ -43,9 +47,12 @@ async function run() {
         description,
         headers: { accept: "application/vnd.github.symmetra-preview+json" }
       });
+      console.log("CREATE");
       await octokit.issues.createLabel(params);
     }
   });
+
+  console.log(labels);
 
   // Delete labels that exist on GitHub that aren't in labels.json
   labels.forEach(async label => {
