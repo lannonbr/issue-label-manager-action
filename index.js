@@ -16,6 +16,8 @@ async function run() {
 
   let newLabels = JSON.parse(fs.readFileSync(url).toString());
 
+  console.log({ newLabels, labels });
+
   newLabels.forEach(async label => {
     let { name, color, description } = label;
 
