@@ -21,16 +21,21 @@ async function run() {
   newLabels.forEach(async label => {
     let { name, color, description } = label;
 
-    let params = tools.context.repo({
-      name,
-      color,
-      description,
-      headers: { accept: "application/vnd.github.symmetra-preview+json" }
-    });
-
     if (labels.some(issue => issue.name === name)) {
+      let params = tools.context.repo({
+        current_name: name,
+        color,
+        description,
+        headers: { accept: "application/vnd.github.symmetra-preview+json" }
+      });
       await octokit.issues.updateLabel(params);
     } else {
+      let params = tools.context.repo({
+        name,
+        color,
+        description,
+        headers: { accept: "application/vnd.github.symmetra-preview+json" }
+      });
       await octokit.issues.createLabel(params);
     }
   });
