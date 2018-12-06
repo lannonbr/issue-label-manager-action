@@ -19,7 +19,11 @@ async function run() {
   newLabels.forEach(async label => {
     let { name, color, description } = label;
 
-    let idx = labels.indexOf(issue => issue.name === name);
+    let idx = -1;
+
+    if (labels.length > 0) {
+      idx = labels.indexOf(issue => issue.name === name);
+    }
 
     if (idx !== -1) {
       let params = tools.context.repo({
