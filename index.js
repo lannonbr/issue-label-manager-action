@@ -1,71 +1,105 @@
 const { Toolkit } = require("actions-toolkit");
 const fs = require("fs");
 const path = require("path");
-
 const tools = new Toolkit();
 const octokit = tools.createOctokit();
 
 async function run() {
-  // Get current labels on GitHub
-  let response = await octokit.issues.listLabelsForRepo(tools.context.repo());
-  let labels = response.data;
-
-  let url = path.join(
+  let newLabelsUrl = path.join(
     process.env["GITHUB_WORKSPACE"],
     ".github",
     "labels.json"
   );
 
-  // Get the labels to be pushed from the labels.json file
-  let newLabels = JSON.parse(fs.readFileSync(url).toString());
+  let liveLabels = await getCurrentLabels();
+  let newLabels = JSON.parse(fs.readFileSync(newLabelsUrl).toString());
 
-  let indexesOfLabelsToBeRemovedFromArray = await Promise.all(
-    newLabels.map(async label => {
-      return new Promise(async resolve => {
-        let { name, color, description } = label;
+  let labelModList = diffLabels(liveLabels, newLabels);
 
-        let idx = -1;
-
-        if (labels.length > 0) {
-          idx = labels.findIndex(issue => issue.name === name);
-        }
-
-        if (idx !== -1) {
-          let params = tools.context.repo({
-            current_name: name,
-            color,
-            description,
-            headers: { accept: "application/vnd.github.symmetra-preview+json" }
-          });
-          await octokit.issues.updateLabel(params);
-          resolve(idx);
-        } else {
-          let params = tools.context.repo({
-            name,
-            color,
-            description,
-            headers: { accept: "application/vnd.github.symmetra-preview+json" }
-          });
-          await octokit.issues.createLabel(params);
-          resolve(-1);
-        }
+  labelModList.forEach(async mod => {
+    if (mod.type === "create") {
+      let params = tools.context.repo({
+        name: mod.label.name,
+        color: mod.label.color,
+        description: mod.label.description,
+        headers: { accept: "application/vnd.github.symmetra-preview+json" }
       });
-    })
-  );
+      console.log(`[Action] Creating Label: ${mod.label.name}`);
 
-  // Filter labels array to include labels not defined in json file
-  labels = labels.filter((_, idx) => {
-    return !indexesOfLabelsToBeRemovedFromArray.includes(idx);
+      await octokit.issues.createLabel(params);
+    } else if (mod.type === "update") {
+      let params = tools.context.repo({
+        current_name: mod.label.name,
+        color: mod.label.color,
+        description: mod.label.description,
+        headers: { accept: "application/vnd.github.symmetra-preview+json" }
+      });
+      console.log(`[Action] Updating Label: ${mod.label.name}`);
+
+      await octokit.issues.updateLabel(params);
+    } else if (mod.type === "delete") {
+      let params = tools.context.repo({
+        name: mod.label.name
+      });
+      console.log(`[Action] Deleting Label: ${mod.label.name}`);
+
+      await octokit.issues.deleteLabel(params);
+    }
+  });
+}
+
+async function getCurrentLabels() {
+  let response = await octokit.issues.listLabelsForRepo(tools.context.repo());
+  let data = response.data;
+
+  return data;
+}
+
+function diffLabels(oldLabels, newLabels) {
+  // Return diff which includes
+  // 1) New labels to be created
+  // 2) Labels that exist but have an update
+  // 3) Labels that no longer exist and should be deleted
+
+  // each entry has two values
+  // { type: 'create' | 'update' | 'delete', label }
+
+  let oldLabelsNames = oldLabels.map(label => label.name);
+  let newLabelsNames = newLabels.map(label => label.name);
+
+  let labelModList = [];
+
+  oldLabelsNames.forEach(oLabel => {
+    if (newLabelsNames.includes(oLabel)) {
+      const oldLabel = oldLabels.filter(l => l.name === oLabel)[0];
+      const newLabel = newLabels.filter(l => l.name === oLabel)[0];
+
+      if (
+        oldLabel.color !== newLabel.color ||
+        oldLabel.description !== newLabel.description
+      ) {
+        // UPDATE
+        labelModList.push({ type: "update", label: newLabel });
+      }
+      newLabelsNames = newLabelsNames.filter(element => {
+        return element !== oLabel;
+      });
+    } else {
+      // DELETE
+      const oldLabel = oldLabels.filter(l => l.name === oLabel)[0];
+
+      labelModList.push({ type: "delete", label: oldLabel });
+    }
   });
 
-  // Delete labels that exist on GitHub that aren't in labels.json
-  labels.forEach(async label => {
-    let { name } = label;
+  newLabelsNames.forEach(nLabel => {
+    const newLabel = newLabels.filter(l => l.name === nLabel)[0];
 
-    let params = tools.context.repo({ name });
-
-    await octokit.issues.deleteLabel(params);
+    // CREATE
+    labelModList.push({ type: "create", label: newLabel });
   });
+
+  return labelModList;
 }
 
 run();
