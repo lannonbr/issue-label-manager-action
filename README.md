@@ -12,6 +12,8 @@ The result of using the labels.json file shown above is as follows:
 
 ![Labels result](screenshots/labels.png)
 
+If a label doesn't need a description, leave out the `description` field of the entry in the json file and when deployed the label will not contain a description.
+
 ## Usage
 
 This action only needs the GITHUB_TOKEN secret as it interacts with the GitHub API to modify labels. The action can be used as such:
