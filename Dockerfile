@@ -1,4 +1,4 @@
-from node:10-slim
+from node:10.14.2-slim
 
 LABEL version="1.0.0"
 LABEL repository="https://github/lannonbr/issue-label-manager-action"
