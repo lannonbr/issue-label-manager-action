@@ -74,6 +74,8 @@ function diffLabels(oldLabels, newLabels) {
       const oldLabel = oldLabels.filter(l => l.name === oLabel)[0];
       const newLabel = newLabels.filter(l => l.name === oLabel)[0];
 
+      console.log({ oldLabel, newLabel });
+
       if (
         oldLabel.color !== newLabel.color ||
         oldLabel.description !== newLabel.description
