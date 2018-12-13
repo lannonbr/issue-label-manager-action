@@ -49,7 +49,11 @@ async function run() {
 }
 
 async function getCurrentLabels() {
-  let response = await octokit.issues.listLabelsForRepo(tools.context.repo());
+  let response = await octokit.issues.listLabelsForRepo(
+    tools.context.repo({
+      headers: { accept: "application/vnd.github.symmetra-preview+json" }
+    })
+  );
   let data = response.data;
 
   return data;
@@ -73,8 +77,6 @@ function diffLabels(oldLabels, newLabels) {
     if (newLabelsNames.includes(oLabel)) {
       const oldLabel = oldLabels.filter(l => l.name === oLabel)[0];
       const newLabel = newLabels.filter(l => l.name === oLabel)[0];
-
-      console.log({ oldLabel, newLabel });
 
       if (
         oldLabel.color !== newLabel.color ||
