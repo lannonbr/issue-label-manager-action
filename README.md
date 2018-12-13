@@ -11,3 +11,14 @@ Then, set up a workflow that executes this action. When run, it will update the 
 The result of using the labels.json file shown above is as follows:
 
 ![Labels result](screenshots/labels.png)
+
+## Usage
+
+This action only needs the GITHUB_TOKEN secret as it interacts with the GitHub API to modify labels. The action can be used as such:
+
+```hcl
+action "Update Label" {
+  uses = "lannonbr/issue-label-manager-action@master"
+  secrets = ["GITHUB_TOKEN"]
+}
+```
