@@ -1,6 +1,6 @@
 from node:10.14.2-slim
 
-LABEL version="1.0.0"
+LABEL version="1.1.0"
 LABEL repository="https://github/lannonbr/issue-label-manager-action"
 LABEL maintainer="Benjamin Lannon <benjamin@lannonbr.com>"
 
