@@ -14,6 +14,13 @@ async function run() {
   let liveLabels = await getCurrentLabels();
   let newLabels = JSON.parse(fs.readFileSync(newLabelsUrl).toString());
 
+  // If the color of a label has a # sign, remove it
+  newLabels.forEach(newLabel => {
+    if (newLabel.color[0] === "#") {
+      newLabel.color = newLabel.color.slice(1);
+    }
+  });
+
   let labelModList = diffLabels(liveLabels, newLabels);
 
   labelModList.forEach(async mod => {
