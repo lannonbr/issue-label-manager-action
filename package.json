@@ -7,7 +7,7 @@
   "author": "Benjamin Lannon <benjamin@lannonbr.com>",
   "license": "MIT",
   "scripts": {
-    "build": "parcel build index.js --out-dir lib"
+    "build": "parcel build index.js --out-dir lib --target node --bundle-node-modules"
   },
   "dependencies": {
     "@actions/github": "^1.0.0"
