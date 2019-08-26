@@ -18,9 +18,10 @@ If a label doesn't need a description, leave out the `description` field of the 
 
 This action only needs the GITHUB_TOKEN secret as it interacts with the GitHub API to modify labels. The action can be used as such:
 
-```hcl
-action "Update Label" {
-  uses = "lannonbr/issue-label-manager-action@master"
-  secrets = ["GITHUB_TOKEN"]
-}
+```yaml
+steps:
+  - name: "Check & Modify Labels"
+    uses: lannonbr/issue-label-manager-action@2.0.0
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
