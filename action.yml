@@ -1,0 +1,9 @@
+name: "Issue Label Manager Action"
+description: "Will update repo's labels based on data in JSON file located at $REPO/.github/labels.json"
+author: "Benjamin Lannon <benjamin@lannonbr.com>"
+runs:
+  using: "node12"
+  main: "lib/index.js"
+branding:
+  icon: "upload"
+  color: "green"

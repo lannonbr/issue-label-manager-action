@@ -1,8 +1,9 @@
-const { Toolkit } = require("actions-toolkit");
 const fs = require("fs");
 const path = require("path");
-const tools = new Toolkit();
-const octokit = tools.createOctokit();
+const github = require("@actions/github");
+
+const accessToken = process.env.GITHUB_TOKEN;
+const octokit = new github.GitHub(accessToken);
 
 async function run() {
   let newLabelsUrl = path.join(
@@ -25,29 +26,32 @@ async function run() {
 
   labelModList.forEach(async mod => {
     if (mod.type === "create") {
-      let params = tools.context.repo({
+      let params = {
+        ...github.context.repo,
         name: mod.label.name,
         color: mod.label.color,
         description: mod.label.description,
-        headers: { accept: "application/vnd.github.symmetra-preview+json" }
-      });
+        previews: ["symmetra"]
+      };
       console.log(`[Action] Creating Label: ${mod.label.name}`);
 
       await octokit.issues.createLabel(params);
     } else if (mod.type === "update") {
-      let params = tools.context.repo({
+      let params = {
+        ...github.context.repo,
         current_name: mod.label.name,
         color: mod.label.color,
         description: mod.label.description,
-        headers: { accept: "application/vnd.github.symmetra-preview+json" }
-      });
+        previews: ["symmetra"]
+      };
       console.log(`[Action] Updating Label: ${mod.label.name}`);
 
       await octokit.issues.updateLabel(params);
     } else if (mod.type === "delete") {
-      let params = tools.context.repo({
+      let params = {
+        ...github.context.repo,
         name: mod.label.name
-      });
+      };
       console.log(`[Action] Deleting Label: ${mod.label.name}`);
 
       await octokit.issues.deleteLabel(params);
@@ -56,11 +60,10 @@ async function run() {
 }
 
 async function getCurrentLabels() {
-  let response = await octokit.issues.listLabelsForRepo(
-    tools.context.repo({
-      headers: { accept: "application/vnd.github.symmetra-preview+json" }
-    })
-  );
+  let response = await octokit.issues.listLabelsForRepo({
+    ...github.context.repo,
+    previews: ["symmetra"]
+  });
   let data = response.data;
 
   return data;
