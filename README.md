@@ -19,9 +19,15 @@ If a label doesn't need a description, leave out the `description` field of the 
 This action only needs the GITHUB_TOKEN secret as it interacts with the GitHub API to modify labels. The action can be used as such:
 
 ```yaml
-steps:
-  - name: "Check & Modify Labels"
-    uses: lannonbr/issue-label-manager-action@2.0.0
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+on: issues
+name: Create Default Labels
+jobs:
+  labels:
+    name: DefaultLabelsActions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@1.0.0
+      - uses: lannonbr/issue-label-manager-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
