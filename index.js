@@ -96,6 +96,10 @@ function diffLabels(oldLabels, newLabels) {
         oldLabel.color !== newLabel.color ||
         oldLabel.description !== newLabel.description
       ) {
+        console.log('update')
+        console.log({ oldLabel })
+        console.log({ newLabel })
+
         // UPDATE
         labelModList.push({ type: "update", label: newLabel });
       }
