@@ -1,7 +1,8 @@
-# Unreleased Changes
+# 3.0.0 - May 29, 2021
 
-- breaking: Switched default behavior to not delete default labels. To enable this, set `delete` input to true.
-- chore: Moved from parcel to NCC for bundling the code down.
+- breaking: Switched default behavior to not delete default labels. To enable this, set `delete` input to true
+- chore: Moved from parcel to NCC for bundling the code down
+- fix: no longer tries to update if the label didn't have a description
 - chore: Updated dependencies
 
 # 2.0.0 - August 25, 2019
