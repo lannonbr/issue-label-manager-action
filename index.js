@@ -94,7 +94,7 @@ function diffLabels(oldLabels, newLabels) {
 
       if (
         oldLabel.color !== newLabel.color ||
-        oldLabel.description !== newLabel.description
+        (typeof newLabel.description !== 'undefined' && oldLabel.description !== newLabel.description)
       ) {
         console.log('update')
         console.log({ oldLabel })
