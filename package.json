@@ -7,12 +7,13 @@
   "author": "Benjamin Lannon <benjamin@lannonbr.com>",
   "license": "MIT",
   "scripts": {
-    "build": "parcel build index.js --out-dir lib --target node --bundle-node-modules"
+    "build": "ncc build index.js -o lib -m"
   },
   "dependencies": {
-    "@actions/github": "^1.0.0"
+    "@actions/github": "^5.0.0",
+    "@actions/core": "^1.3.0"
   },
   "devDependencies": {
-    "parcel-bundler": "1.12.3"
+    "@vercel/ncc": "^0.28.6"
   }
 }

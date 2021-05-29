@@ -7,3 +7,8 @@ runs:
 branding:
   icon: "upload"
   color: "green"
+inputs:
+  delete:
+    description: "Will not delete any existing labels and will only modify / create them"
+    required: false
+    default: false

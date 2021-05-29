@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const github = require("@actions/github");
+const core = require('@actions/core')
 
 const accessToken = process.env.GITHUB_TOKEN;
 const octokit = new github.GitHub(accessToken);
@@ -11,6 +12,10 @@ async function run() {
     ".github",
     "labels.json"
   );
+
+  if (!core.getBooleanInput('delete')) {
+    console.log('[Action] Will not delete any existing labels')
+  }
 
   let liveLabels = await getCurrentLabels();
   let newLabels = JSON.parse(fs.readFileSync(newLabelsUrl).toString());
@@ -31,7 +36,6 @@ async function run() {
         name: mod.label.name,
         color: mod.label.color,
         description: mod.label.description,
-        previews: ["symmetra"]
       };
       console.log(`[Action] Creating Label: ${mod.label.name}`);
 
@@ -42,19 +46,20 @@ async function run() {
         current_name: mod.label.name,
         color: mod.label.color,
         description: mod.label.description,
-        previews: ["symmetra"]
       };
       console.log(`[Action] Updating Label: ${mod.label.name}`);
 
       await octokit.issues.updateLabel(params);
     } else if (mod.type === "delete") {
-      let params = {
-        ...github.context.repo,
-        name: mod.label.name
-      };
-      console.log(`[Action] Deleting Label: ${mod.label.name}`);
-
-      await octokit.issues.deleteLabel(params);
+      if (core.getBooleanInput('delete')) {
+        let params = {
+          ...github.context.repo,
+          name: mod.label.name
+        };
+        console.log(`[Action] Deleting Label: ${mod.label.name}`);
+  
+        await octokit.issues.deleteLabel(params);
+      }
     }
   });
 }
@@ -62,7 +67,6 @@ async function run() {
 async function getCurrentLabels() {
   let response = await octokit.issues.listLabelsForRepo({
     ...github.context.repo,
-    previews: ["symmetra"]
   });
   let data = response.data;
 

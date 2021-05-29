@@ -1,3 +1,9 @@
+# Unreleased Changes
+
+- breaking: Switched default behavior to not delete default labels. To enable this, set `delete` input to true.
+- chore: Moved from parcel to NCC for bundling the code down.
+- chore: Updated dependencies
+
 # 2.0.0 - August 25, 2019
 
 - feat: Updated to JS Actions syntax. Removed Dockerfile and switched to action.yml with bundled version of package using parcel

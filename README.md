@@ -6,7 +6,7 @@ In the repo you'd like to use this, define a JSON file in `.github/labels.json`.
 
 ![labels.json file](screenshots/json.png)
 
-Then, set up a workflow that executes this action. When run, it will update the list of labels in the repo to match the JSON file and will delete any other labels.
+Then, set up a workflow that executes this action. When run, it will update the list of labels in the repo to match the JSON file. If you wish for this to remove any labels not in the JSON file, set the `delete` input to true as shown in the example below.
 
 The result of using the labels.json file shown above is as follows:
 
@@ -30,4 +30,6 @@ jobs:
       - uses: lannonbr/issue-label-manager-action@2.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          delete: true # will delete any labels that aren't in the .github/labels.json (this is set to false by default)
 ```
