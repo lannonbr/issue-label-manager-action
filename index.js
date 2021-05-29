@@ -4,7 +4,7 @@ const github = require("@actions/github");
 const core = require('@actions/core');
 
 const accessToken = process.env.GITHUB_TOKEN;
-const octokit = new github.GitHub(accessToken);
+const octokit = github.getOctokit(accessToken);
 
 async function run() {
   let newLabelsUrl = path.join(
@@ -39,7 +39,7 @@ async function run() {
       };
       console.log(`[Action] Creating Label: ${mod.label.name}`);
 
-      await octokit.issues.createLabel(params);
+      await octokit.rest.issues.createLabel(params);
     } else if (mod.type === "update") {
       let params = {
         ...github.context.repo,
@@ -49,7 +49,7 @@ async function run() {
       };
       console.log(`[Action] Updating Label: ${mod.label.name}`);
 
-      await octokit.issues.updateLabel(params);
+      await octokit.rest.issues.updateLabel(params);
     } else if (mod.type === "delete") {
       if (core.getBooleanInput('delete')) {
         let params = {
@@ -58,14 +58,14 @@ async function run() {
         };
         console.log(`[Action] Deleting Label: ${mod.label.name}`);
   
-        await octokit.issues.deleteLabel(params);
+        await octokit.rest.issues.deleteLabel(params);
       }
     }
   });
 }
 
 async function getCurrentLabels() {
-  let response = await octokit.issues.listLabelsForRepo({
+  let response = await octokit.rest.issues.listLabelsForRepo({
     ...github.context.repo,
   });
   let data = response.data;
