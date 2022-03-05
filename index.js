@@ -88,7 +88,9 @@ function diffLabels(oldLabels, newLabels) {
   let labelModList = [];
 
   oldLabelsNames.forEach(oLabel => {
-    if (newLabelsNames.includes(oLabel)) {
+    // when using `includes` with strings, the match is case-sensitive
+    // so we first lowercase both strings when comparing
+    if (newLabelsNames.toLowerCase().includes(oLabel.toLowerCase())) {
       const oldLabel = oldLabels.filter(l => l.name === oLabel)[0];
       const newLabel = newLabels.filter(l => l.name === oLabel)[0];
 
