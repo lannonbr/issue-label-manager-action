@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const github = require("@actions/github");
-const core = require('@actions/core');
+const core = require("@actions/core");
 
 const accessToken = process.env.GITHUB_TOKEN;
 const octokit = github.getOctokit(accessToken);
@@ -13,15 +13,15 @@ async function run() {
     "labels.json"
   );
 
-  if (!core.getBooleanInput('delete')) {
-    console.log('[Action] Will not delete any existing labels')
+  if (!core.getBooleanInput("delete")) {
+    console.log("[Action] Will not delete any existing labels");
   }
 
   let liveLabels = await getCurrentLabels();
   let newLabels = JSON.parse(fs.readFileSync(newLabelsUrl).toString());
 
   // If the color of a label has a # sign, remove it
-  newLabels.forEach(newLabel => {
+  newLabels.forEach((newLabel) => {
     if (newLabel.color[0] === "#") {
       newLabel.color = newLabel.color.slice(1);
     }
@@ -29,7 +29,7 @@ async function run() {
 
   let labelModList = diffLabels(liveLabels, newLabels);
 
-  labelModList.forEach(async mod => {
+  labelModList.forEach(async (mod) => {
     if (mod.type === "create") {
       let params = {
         ...github.context.repo,
@@ -51,13 +51,13 @@ async function run() {
 
       await octokit.rest.issues.updateLabel(params);
     } else if (mod.type === "delete") {
-      if (core.getBooleanInput('delete')) {
+      if (core.getBooleanInput("delete")) {
         let params = {
           ...github.context.repo,
-          name: mod.label.name
+          name: mod.label.name,
         };
         console.log(`[Action] Deleting Label: ${mod.label.name}`);
-  
+
         await octokit.rest.issues.deleteLabel(params);
       }
     }
@@ -82,38 +82,39 @@ function diffLabels(oldLabels, newLabels) {
   // each entry has two values
   // { type: 'create' | 'update' | 'delete', label }
 
-  let oldLabelsNames = oldLabels.map(label => label.name);
-  let newLabelsNames = newLabels.map(label => label.name);
+  let oldLabelsNames = oldLabels.map((label) => label.name);
+  let newLabelsNames = newLabels.map((label) => label.name);
 
   let labelModList = [];
 
-  oldLabelsNames.forEach(oLabel => {
+  oldLabelsNames.forEach((oLabel) => {
     // when using `includes` with strings, the match is case-sensitive
     // so we first lowercase both strings when comparing
     if (newLabelsNames.toLowerCase().includes(oLabel.toLowerCase())) {
-      const oldLabel = oldLabels.filter(l => l.name === oLabel)[0];
-      const newLabel = newLabels.filter(l => l.name === oLabel)[0];
+      const oldLabel = oldLabels.filter((l) => l.name === oLabel)[0];
+      const newLabel = newLabels.filter((l) => l.name === oLabel)[0];
 
       if (
         oldLabel.color !== newLabel.color ||
-        (typeof newLabel.description !== 'undefined' && oldLabel.description !== newLabel.description)
+        (typeof newLabel.description !== "undefined" &&
+          oldLabel.description !== newLabel.description)
       ) {
         // UPDATE
         labelModList.push({ type: "update", label: newLabel });
       }
-      newLabelsNames = newLabelsNames.filter(element => {
+      newLabelsNames = newLabelsNames.filter((element) => {
         return element !== oLabel;
       });
     } else {
       // DELETE
-      const oldLabel = oldLabels.filter(l => l.name === oLabel)[0];
+      const oldLabel = oldLabels.filter((l) => l.name === oLabel)[0];
 
       labelModList.push({ type: "delete", label: oldLabel });
     }
   });
 
-  newLabelsNames.forEach(nLabel => {
-    const newLabel = newLabels.filter(l => l.name === nLabel)[0];
+  newLabelsNames.forEach((nLabel) => {
+    const newLabel = newLabels.filter((l) => l.name === nLabel)[0];
 
     // CREATE
     labelModList.push({ type: "create", label: newLabel });
