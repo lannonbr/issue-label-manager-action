@@ -1,6 +1,6 @@
 {
   "name": "issue-label-manager-action",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Will update repo's labels based on data in JSON file located at $REPO/.github/labels.json",
   "main": "index.js",
   "keywords": [],

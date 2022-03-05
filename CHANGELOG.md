@@ -1,3 +1,7 @@
+# 3.0.1 - March 5, 2022
+
+- fix: When comparing labels, the action will no longer care about case sensitivity (ex: `label` and `Label` will be treated as the same).
+
 # 3.0.0 - May 29, 2021
 
 - breaking: Switched default behavior to not delete default labels. To enable this, set `delete` input to true
