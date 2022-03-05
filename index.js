@@ -82,15 +82,15 @@ function diffLabels(oldLabels, newLabels) {
   // each entry has two values
   // { type: 'create' | 'update' | 'delete', label }
 
-  let oldLabelsNames = oldLabels.map((label) => label.name);
-  let newLabelsNames = newLabels.map((label) => label.name);
+  let oldLabelsNames = oldLabels.map((label) => label.name.toLowerCase());
+  let newLabelsNames = newLabels.map((label) => label.name.toLowerCase());
 
   let labelModList = [];
 
   oldLabelsNames.forEach((oLabel) => {
     // when using `includes` with strings, the match is case-sensitive
     // so we first lowercase both strings when comparing
-    if (newLabelsNames.toLowerCase().includes(oLabel.toLowerCase())) {
+    if (newLabelsNames.includes(oLabel)) {
       const oldLabel = oldLabels.filter((l) => l.name === oLabel)[0];
       const newLabel = newLabels.filter((l) => l.name === oLabel)[0];
 
