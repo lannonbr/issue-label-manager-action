@@ -1,3 +1,7 @@
+# 4.0.0 - November 25, 2022
+
+- breaking: Updated action to use node 16.x
+
 # 3.0.1 - March 5, 2022
 
 - fix: When comparing labels, the action will no longer care about case sensitivity (ex: `label` and `Label` will be treated as the same).
