@@ -1,4 +1,4 @@
-# Issue Label Manager Action
+#  Issue Label Manager Action
 
 This GitHub Action allows you to declaratively state the labels to be defined in a repo.
 
