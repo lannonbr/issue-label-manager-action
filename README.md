@@ -25,6 +25,13 @@ jobs:
   labels:
     name: DefaultLabelsActions
     runs-on: ubuntu-latest
+
+    # These permissions are needed to update the labels.
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+
     steps:
       - uses: actions/checkout@1.0.0
       - uses: lannonbr/issue-label-manager-action@3.0.0
