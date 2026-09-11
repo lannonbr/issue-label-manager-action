@@ -10,15 +10,28 @@ async function run() {
   let newLabelsUrl = path.join(
     process.env["GITHUB_WORKSPACE"],
     ".github",
-    "labels.json"
+    "labels.json",
   );
 
   if (!core.getBooleanInput("delete")) {
     console.log("[Action] Will not delete any existing labels");
   }
 
-  let liveLabels = await getCurrentLabels();
-  let newLabels = JSON.parse(fs.readFileSync(newLabelsUrl).toString());
+  let liveLabels;
+  try {
+    liveLabels = await getCurrentLabels();
+  } catch (error) {
+    core.setFailed(`Failed to get current labels: ${error.message}`);
+    return;
+  }
+
+  let newLabels;
+  try {
+    newLabels = JSON.parse(fs.readFileSync(newLabelsUrl).toString());
+  } catch (error) {
+    core.setFailed(`Failed to read new labels: ${error.message}`);
+    return;
+  }
 
   // If the color of a label has a # sign, remove it
   newLabels.forEach((newLabel) => {
@@ -39,7 +52,11 @@ async function run() {
       };
       console.log(`[Action] Creating Label: ${mod.label.name}`);
 
-      await octokit.rest.issues.createLabel(params);
+      try {
+        await octokit.rest.issues.createLabel(params);
+      } catch (error) {
+        core.setFailed(`Failed to create label: ${error.message}`);
+      }
     } else if (mod.type === "update") {
       let params = {
         ...github.context.repo,
@@ -49,7 +66,11 @@ async function run() {
       };
       console.log(`[Action] Updating Label: ${mod.label.name}`);
 
-      await octokit.rest.issues.updateLabel(params);
+      try {
+        await octokit.rest.issues.updateLabel(params);
+      } catch (error) {
+        core.setFailed(`Failed to update label: ${error.message}`);
+      }
     } else if (mod.type === "delete") {
       if (core.getBooleanInput("delete")) {
         let params = {
@@ -58,7 +79,11 @@ async function run() {
         };
         console.log(`[Action] Deleting Label: ${mod.label.name}`);
 
-        await octokit.rest.issues.deleteLabel(params);
+        try {
+          await octokit.rest.issues.deleteLabel(params);
+        } catch (error) {
+          core.setFailed(`Failed to delete label: ${error.message}`);
+        }
       }
     }
   });
