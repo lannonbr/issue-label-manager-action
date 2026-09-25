@@ -1,6 +1,8 @@
-# 5.0.0 - September 11, 2026
+# 5.0.0 - September 25, 2026
 
 - breaking: Updated action to use node 24.x
+- feat: Add additional error handling (https://github.com/lannonbr/issue-label-manager-action/pull/36 by shogo82148)
+- chore: Updated dependencies
 
 # 4.0.0 - November 25, 2022
 

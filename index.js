@@ -1,10 +1,10 @@
-const fs = require("fs");
-const path = require("path");
-const github = require("@actions/github");
-const core = require("@actions/core");
+import fs from "fs";
+import path from "path";
+import { getOctokit, context } from "@actions/github";
+import { setFailed, getBooleanInput } from "@actions/core";
 
 const accessToken = process.env.GITHUB_TOKEN;
-const octokit = github.getOctokit(accessToken);
+const octokit = getOctokit(accessToken);
 
 async function run() {
   let newLabelsUrl = path.join(
@@ -13,7 +13,7 @@ async function run() {
     "labels.json",
   );
 
-  if (!core.getBooleanInput("delete")) {
+  if (!getBooleanInput("delete")) {
     console.log("[Action] Will not delete any existing labels");
   }
 
@@ -21,7 +21,7 @@ async function run() {
   try {
     liveLabels = await getCurrentLabels();
   } catch (error) {
-    core.setFailed(`Failed to get current labels: ${error.message}`);
+    setFailed(`Failed to get current labels: ${error.message}`);
     return;
   }
 
@@ -29,7 +29,7 @@ async function run() {
   try {
     newLabels = JSON.parse(fs.readFileSync(newLabelsUrl).toString());
   } catch (error) {
-    core.setFailed(`Failed to read new labels: ${error.message}`);
+    setFailed(`Failed to read new labels: ${error.message}`);
     return;
   }
 
@@ -45,7 +45,7 @@ async function run() {
   labelModList.forEach(async (mod) => {
     if (mod.type === "create") {
       let params = {
-        ...github.context.repo,
+        ...context.repo,
         name: mod.label.name,
         color: mod.label.color,
         description: mod.label.description,
@@ -55,11 +55,11 @@ async function run() {
       try {
         await octokit.rest.issues.createLabel(params);
       } catch (error) {
-        core.setFailed(`Failed to create label: ${error.message}`);
+        setFailed(`Failed to create label: ${error.message}`);
       }
     } else if (mod.type === "update") {
       let params = {
-        ...github.context.repo,
+        ...context.repo,
         current_name: mod.label.name,
         color: mod.label.color,
         description: mod.label.description,
@@ -69,12 +69,12 @@ async function run() {
       try {
         await octokit.rest.issues.updateLabel(params);
       } catch (error) {
-        core.setFailed(`Failed to update label: ${error.message}`);
+        setFailed(`Failed to update label: ${error.message}`);
       }
     } else if (mod.type === "delete") {
       if (core.getBooleanInput("delete")) {
         let params = {
-          ...github.context.repo,
+          ...context.repo,
           name: mod.label.name,
         };
         console.log(`[Action] Deleting Label: ${mod.label.name}`);
@@ -82,7 +82,7 @@ async function run() {
         try {
           await octokit.rest.issues.deleteLabel(params);
         } catch (error) {
-          core.setFailed(`Failed to delete label: ${error.message}`);
+          setFailed(`Failed to delete label: ${error.message}`);
         }
       }
     }

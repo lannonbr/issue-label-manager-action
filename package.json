@@ -4,6 +4,7 @@
   "description": "Will update repo's labels based on data in JSON file located at $REPO/.github/labels.json",
   "main": "index.js",
   "keywords": [],
+  "type": "module",
   "author": "Benjamin Lannon <benjamin@lannonbr.com>",
   "license": "MIT",
   "scripts": {
@@ -13,10 +14,10 @@
     "node": ">=24"
   },
   "dependencies": {
-    "@actions/core": "^1.10.0",
-    "@actions/github": "^5.1.1"
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.34.0"
+    "@vercel/ncc": "^0.45.0"
   }
 }
