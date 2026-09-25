@@ -72,7 +72,7 @@ async function run() {
         setFailed(`Failed to update label: ${error.message}`);
       }
     } else if (mod.type === "delete") {
-      if (core.getBooleanInput("delete")) {
+      if (getBooleanInput("delete")) {
         let params = {
           ...context.repo,
           name: mod.label.name,
@@ -91,7 +91,7 @@ async function run() {
 
 async function getCurrentLabels() {
   let response = await octokit.rest.issues.listLabelsForRepo({
-    ...github.context.repo,
+    ...context.repo,
   });
   let data = response.data;
 
