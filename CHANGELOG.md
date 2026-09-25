@@ -1,3 +1,7 @@
+# 5.0.0 - September 11, 2026
+
+- breaking: Updated action to use node 24.x
+
 # 4.0.0 - November 25, 2022
 
 - breaking: Updated action to use node 16.x
