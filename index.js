@@ -60,7 +60,7 @@ async function run() {
     } else if (mod.type === "update") {
       let params = {
         ...context.repo,
-        current_name: mod.label.name,
+        name: mod.label.name,
         color: mod.label.color,
         description: mod.label.description,
       };
